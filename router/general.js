@@ -1,4 +1,5 @@
 const express = require('express');
+const axios = require('axios'); // Imported axios for async requests
 let books = require("../booksdb.js");
 let isValid = require("./auth_users.js").isValid;
 let users = require("./auth_users.js").users;
@@ -65,6 +66,55 @@ public_users.get('/books/review/:isbn', (req, res) => {
         res.status(200).json(book.reviews);
     } else {
         res.status(404).json({ message: "Book not found" });
+    }
+});
+
+
+// ==========================================
+// IBM COURSERA ASYNC TASKS (10 - 13)
+// ==========================================
+
+// TASK 10: Create an async callback function to retrieve all books.
+public_users.get('/async/books', async (req, res) => {
+    try {
+        const response = await axios.get('http://localhost:5000/books');
+        return res.status(200).json(response.data);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+});
+
+// TASK 11: Search by ISBN using Promises.
+public_users.get('/async/books/isbn/:isbn', (req, res) => {
+    const isbn = req.params.isbn;
+    axios.get(`http://localhost:5000/books/isbn/${isbn}`)
+        .then(response => {
+            return res.status(200).json(response.data);
+        })
+        .catch(error => {
+            return res.status(500).json({ message: error.message });
+        });
+});
+
+// TASK 12: Search by Author using async/await.
+public_users.get('/async/books/author/:author', async (req, res) => {
+    try {
+        const author = req.params.author;
+        const response = await axios.get(`http://localhost:5000/books/author/${author}`);
+        return res.status(200).json(response.data);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+});
+
+// TASK 13: Search by Title using async/await.
+public_users.get('/async/books/title/:title', async (req, res) => {
+    try {
+        const title = req.params.title;
+        const response = await axios.get(`http://localhost:5000/books/title/${title}`);
+        return res.status(200).json(response.data);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
     }
 });
 
